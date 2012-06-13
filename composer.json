@@ -1,0 +1,23 @@
+{
+    "name": "amnl/mollie",
+    "description": "PHP 5.3 library to communicate with Mollie (PSP).",
+    "keywords": ["mollie", "api", "webservice", "client", "payment", "ideal", "minitix", "paysafecard"],
+    "homepage": "https://github.com/itavero/AMNL-Mollie",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Arno Moonen",
+            "email": "info@arnom.nl",
+            "homepage": "http://arnom.nl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "kriswallsmith/buzz": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "AMNL\\Mollie": "lib/" }
+    }
+}

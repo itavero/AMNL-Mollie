@@ -129,7 +129,7 @@ class IDealGateway extends BaseGateway
         if ($report_url == $return_url) {
             throw new \InvalidArgumentException('Report URL and Return URL should not be the same.');
         }
-        if (!is_array($options) || !array_key_exists('bank', $options) || !($options['bank'] instanceof Bank || filter_var($options['bank'], FILTER_VALIDATE_INT))) {
+        if (!is_array($options) || !array_key_exists('bank', $options) || !($options['bank'] instanceof Bank || is_int($options['bank']) || is_string($options['bank']))) {
             throw new \InvalidArgumentException('No Bank instance or Bank ID supplied.');
         }
         if (strlen($description) > 29) {

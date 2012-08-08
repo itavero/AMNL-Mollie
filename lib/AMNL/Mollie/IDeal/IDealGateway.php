@@ -144,7 +144,7 @@ class IDealGateway extends BaseGateway
         $params = array(
             'a' => 'fetch',
             'partnerid' => $this->partnerId,
-            'bank_id' => ($bank instanceof Bank) ? $bank->getId() : str_pad(intval($bank), 4, STR_PAD_LEFT),
+            'bank_id' => ($bank instanceof Bank) ? $bank->getId() : $bank,
             'amount' => $amount,
             'description' => $description,
             'reporturl' => $report_url,

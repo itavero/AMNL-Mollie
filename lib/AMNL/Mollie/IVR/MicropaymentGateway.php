@@ -17,6 +17,7 @@ namespace AMNL\Mollie\IVR;
 
 use AMNL\Mollie\Client;
 use AMNL\Mollie\Exception\MollieException;
+use Buzz\Client\ClientInterface;
 
 /**
  * 

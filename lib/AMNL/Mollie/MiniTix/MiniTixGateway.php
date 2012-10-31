@@ -19,6 +19,7 @@ use AMNL\Mollie\BaseGateway;
 use AMNL\Mollie\ProviderResponse;
 use AMNL\Mollie\TransactionStatus;
 use AMNL\Mollie\Exception\MollieException;
+use Buzz\Client\ClientInterface;
 
 /**
  * 

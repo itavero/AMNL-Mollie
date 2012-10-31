@@ -15,6 +15,8 @@
 
 namespace AMNL\Mollie;
 
+use Buzz\Client\ClientInterface;
+
 /**
  *
  *

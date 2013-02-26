@@ -1,5 +1,6 @@
 # AMNL\Mollie
 [![Build Status](https://travis-ci.org/itavero/AMNL-Mollie.png?branch=master)](https://travis-ci.org/itavero/AMNL-Mollie)
+
 The goal of this PHP 5.3+ library is to simplify the implementation of the payment methods offered by [Mollie B.V.](http://www.mollie.nl)
 
 ## PROBLEM?

@@ -32,12 +32,12 @@ abstract class Client
     /**
      * @var Buzz\Browser
      */
-    private $browser;
+    protected $browser;
 
     /**
      * @var string
      */
-    private $baseUrl;
+    protected $baseUrl;
 
     /**
      * @var string User-Agent
@@ -91,11 +91,13 @@ abstract class Client
         }
 
         // Convert XML
-        $xml = @simplexml_load_string($response->getContent());
-
-        // Succesful?
-        if ($xml === false) {
-            throw new MollieException('Server did not respond with valid XML.');
+        $xml = null;
+        try {
+            $xml = new \SimpleXMLElement($response->getContent());
+        }
+        catch (\Exception $e) {
+            // Failed
+            throw new MollieException('Server did not respond with valid XML.', 0, $e);
         }
 
         // Error?

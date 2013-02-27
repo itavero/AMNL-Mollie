@@ -24,8 +24,6 @@ use Buzz\Browser;
 class IDealGatewayTest extends \PHPUnit_Framework_TestCase
 {
 
-    // TODO Add a test that executes a real HTTP request (https://secure.mollie.nl/xml/ideal?a=banklist&testmode=true)
-
     /**
      * @var IDealGateway
      */
@@ -38,6 +36,7 @@ class IDealGatewayTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new IDealGateway(123456, 'abcdef123456789');
+        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
     }
 
     /**
@@ -51,19 +50,98 @@ class IDealGatewayTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers AMNL\Mollie\IDeal\IDealGateway::checkPayment
-     * @todo   Implement testCheckPayment().
+     */
+    public function testCheckPaymentCreateRequest()
+    {
+        // Do request
+        try {
+            $this->object->checkPayment('abcdef');
+        }
+        catch (\Exception $e) {
+            // Exceptions aren't really important.
+            // We're only interested in the request that has
+            // been created.
+        }
+
+        // Test last request
+        $request = $this->object->getBrowser()->getLastRequest();
+        $this->assertEquals(\Buzz\Message\Request::METHOD_GET, $request->getMethod());
+        $this->assertEquals('https://secure.mollie.nl', $request->getHost());
+        $this->assertStringStartsWith('/xml/ideal', $request->getResource());
+        $this->assertContains('a=check', $request->getResource());
+        $this->assertContains('partnerid=123456', $request->getResource());
+        $this->assertContains('transaction_id=abcdef', $request->getResource());
+    }
+
+    /**
+     * @covers AMNL\Mollie\IDeal\IDealGateway::checkPayment
      */
     public function testCheckPaymentHandleResponse()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        // Mock Browser
+        $responseContent = <<<XML
+<?xml version="1.0"?>
+<response>
+    <order>
+        <transaction_id>482d599bbcc7795727650330ad65fe9b</transaction_id>
+        <amount>123</amount>
+        <currency>EUR</currency>
+        <payed>true</payed>
+        <consumer>
+            <consumerName>Hr J Janssen</consumerName>
+            <consumerAccount>P001234567</consumerAccount>
+            <consumerCity>Amsterdam</consumerCity>
+        </consumer>
+        <status>Success</status>
+        <message>This iDEAL-order has successfuly been payed for, and this is the first time you check it.</message>
+    </order>
+</response>
+XML;
+        $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
+        $this->object->setBrowser($mockBrowser);
+
+        // Test
+        $expected = new \AMNL\Mollie\IDeal\IDealTransactionStatus(
+                        123,
+                        true,
+                        '482d599bbcc7795727650330ad65fe9b',
+                        new \AMNL\Mollie\IDeal\Consumer('Hr J Janssen', 'P001234567', 'Amsterdam'),
+                        'Success');
+        $this->assertEquals($expected, $this->object->checkPayment('482d599bbcc7795727650330ad65fe9b'));
     }
 
     /**
      * @covers AMNL\Mollie\IDeal\IDealGateway::preparePayment
-     * @todo   Implement testPreparePayment().
+     */
+    public function testPreparePaymentCreateRequest()
+    {
+        // Do request
+        try {
+            $this->object->prepareIDealPayment(1234, 'https://some.where/a', 'https://some.where/b', 'abc', '9999');
+        }
+        catch (\Exception $e) {
+            // Exceptions aren't really important.
+            // We're only interested in the request that has
+            // been created.
+        }
+
+        // Test last request
+        $request = $this->object->getBrowser()->getLastRequest();
+        $this->assertEquals(\Buzz\Message\Request::METHOD_GET, $request->getMethod());
+        $this->assertEquals('https://secure.mollie.nl', $request->getHost());
+        $this->assertStringStartsWith('/xml/ideal', $request->getResource());
+        $this->assertContains('a=fetch', $request->getResource());
+        $this->assertContains('partnerid=123456', $request->getResource());
+        $this->assertContains('bank_id=9999', $request->getResource());
+        $this->assertContains('amount=1234', $request->getResource());
+        $this->assertContains('description=abc', $request->getResource());
+        $this->assertContains('profile_key=abcdef123456789', $request->getResource());
+        $this->assertContains('reporturl=https', $request->getResource());
+        $this->assertContains('returnurl=https', $request->getResource());
+    }
+
+    /**
+     * @covers AMNL\Mollie\IDeal\IDealGateway::preparePayment
      */
     public function testPreparePaymentHandleResponse()
     {
@@ -90,7 +168,40 @@ XML;
 
     /**
      * @covers AMNL\Mollie\IDeal\IDealGateway::getBankList
-     * @todo   Implement testGetBankList().
+     */
+    public function testGetBankListRealRequest()
+    {
+        $this->object->setClient(new \Buzz\Client\FileGetContents());
+        $banks = $this->object->getBankList(false);
+        $this->assertContainsOnlyInstancesOf('\AMNL\Mollie\IDeal\Bank', $banks);
+        $this->assertCount(1, $banks);
+    }
+
+    /**
+     * @covers AMNL\Mollie\IDeal\IDealGateway::getBankList
+     */
+    public function testGetBankListCreateRequest()
+    {
+        // Do request
+        try {
+            $this->object->getBankList(false);
+        }
+        catch (\Exception $e) {
+            // Exceptions aren't really important.
+            // We're only interested in the request that has
+            // been created.
+        }
+
+        // Test last request
+        $request = $this->object->getBrowser()->getLastRequest();
+        $this->assertEquals(\Buzz\Message\Request::METHOD_GET, $request->getMethod());
+        $this->assertEquals('https://secure.mollie.nl', $request->getHost());
+        $this->assertStringStartsWith('/xml/ideal', $request->getResource());
+        $this->assertContains('a=banklist', $request->getResource());
+    }
+
+    /**
+     * @covers AMNL\Mollie\IDeal\IDealGateway::getBankList
      */
     public function testGetBankListHandleResponse()
     {
@@ -118,7 +229,7 @@ XML;
 
         // Test
         $needle = new Bank(721, 'Postbank');
-        $actual = $this->object->getBankList();
+        $actual = $this->object->getBankList(false);
         $this->assertContainsOnlyInstancesOf('\AMNL\Mollie\IDeal\Bank', $actual);
         $this->assertCount(3, $actual);
         $this->assertTrue(in_array($needle, $actual));
@@ -139,6 +250,10 @@ XML;
                 ->expects($this->any())
                 ->method('send')
                 ->will($this->returnValue($response));
+
+        // Mock client
+        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
+
         return $browser;
     }
 

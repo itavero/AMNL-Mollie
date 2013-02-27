@@ -23,8 +23,6 @@ use Buzz\Browser;
  */
 class MicropaymentGatewayTest extends \PHPUnit_Framework_TestCase
 {
-    // TODO Add tests that fail to check error handling
-    // TODO Add tests to check the request that is formed
 
     /**
      * @var MicropaymentGateway
@@ -38,6 +36,7 @@ class MicropaymentGatewayTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->object = new MicropaymentGateway(123456);
+        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
     }
 
     /**
@@ -51,7 +50,33 @@ class MicropaymentGatewayTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers AMNL\Mollie\IVR\MicropaymentGateway::preparePayment
-     * @todo   Implement testPreparePayment().
+     */
+    public function testPreparePaymentCreateRequest()
+    {
+        // Do request
+        try {
+            $this->object->preparePayment(234, 'https://some.where', 31, '0909-1100400');
+        }
+        catch (\Exception $e) {
+            // Exceptions aren't really important.
+            // We're only interested in the request that has
+            // been created.
+        }
+
+        // Test last request
+        $request = $this->object->getBrowser()->getLastRequest();
+        $this->assertEquals(\Buzz\Message\Request::METHOD_GET, $request->getMethod());
+        $this->assertEquals('https://www.mollie.nl', $request->getHost());
+        $this->assertStringStartsWith('/xml/micropayment', $request->getResource());
+        $this->assertContains('a=fetch', $request->getResource());
+        $this->assertContains('partnerid=123456', $request->getResource());
+        $this->assertContains('amount=2.34', $request->getResource());
+        $this->assertContains('servicenumber=0909-1100400', $request->getResource());
+        $this->assertContains('report=http', $request->getResource());
+    }
+
+    /**
+     * @covers AMNL\Mollie\IVR\MicropaymentGateway::preparePayment
      */
     public function testPreparePaymentHandleResponse()
     {
@@ -77,6 +102,31 @@ XML;
         // Test
         $expected = new \AMNL\Mollie\IVR\MicropaymentResponse('0909-1100400', '012345', MicropaymentGateway::MODE_PAYPERMINUTE, 80, 109, 175, 131);
         $this->assertEquals($expected, $this->object->preparePayment(175));
+    }
+
+    /**
+     * @covers AMNL\Mollie\IVR\MicropaymentGateway::checkPayment
+     */
+    public function testCheckPaymentCreateRequest()
+    {
+        // Do request
+        try {
+            $this->object->checkPayment('0909-1100400', '012345');
+        }
+        catch (\Exception $e) {
+            // Exceptions aren't really important.
+            // We're only interested in the request that has
+            // been created.
+        }
+
+        // Test last request
+        $request = $this->object->getBrowser()->getLastRequest();
+        $this->assertEquals(\Buzz\Message\Request::METHOD_GET, $request->getMethod());
+        $this->assertEquals('https://www.mollie.nl', $request->getHost());
+        $this->assertStringStartsWith('/xml/micropayment', $request->getResource());
+        $this->assertContains('a=check', $request->getResource());
+        $this->assertContains('servicenumber=0909-1100400', $request->getResource());
+        $this->assertContains('paycode=012345', $request->getResource());
     }
 
     /**
@@ -125,6 +175,13 @@ XML;
                 ->expects($this->any())
                 ->method('send')
                 ->will($this->returnValue($response));
+
+        // Mock client
+        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
+
+        // Mock client
+        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
+
         return $browser;
     }
 

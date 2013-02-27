@@ -23,11 +23,9 @@ use Buzz\Browser;
  */
 class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
 {
-    // TODO Add tests that fail to check error handling
-    // TODO Add tests to check the request that is formed
 
     /**
-     * @var MiniTixTestGatewayImpl
+     * @var MiniTixGateway
      */
     protected $object;
 
@@ -37,7 +35,8 @@ class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new MiniTixTestGatewayImpl();
+        $this->object = new MiniTixGateway(123456, 'abcdef123456789');
+        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
     }
 
     /**
@@ -51,7 +50,31 @@ class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers AMNL\Mollie\MiniTix\MiniTixGateway::checkPayment
-     * @todo   Implement testCheckPayment().
+     */
+    public function testCheckPaymentCreateRequest()
+    {
+        // Do request
+        try {
+            $this->object->checkPayment('abcdef');
+        }
+        catch (\Exception $e) {
+            // Exceptions aren't really important.
+            // We're only interested in the request that has
+            // been created.
+        }
+
+        // Test last request
+        $request = $this->object->getBrowser()->getLastRequest();
+        $this->assertEquals(\Buzz\Message\Request::METHOD_GET, $request->getMethod());
+        $this->assertEquals('https://secure.mollie.nl', $request->getHost());
+        $this->assertStringStartsWith('/xml/minitix', $request->getResource());
+        $this->assertContains('action=check', $request->getResource());
+        $this->assertContains('partnerid=123456', $request->getResource());
+        $this->assertContains('transaction_id=abcdef', $request->getResource());
+    }
+
+    /**
+     * @covers AMNL\Mollie\MiniTix\MiniTixGateway::checkPayment
      */
     public function testCheckPaymentHandleResponse()
     {
@@ -69,7 +92,7 @@ class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $expected = new \AMNL\Mollie\TransactionStatus(1234, true, '900150983cd24fb0d6963f7d28e17f72');
@@ -78,7 +101,36 @@ XML;
 
     /**
      * @covers AMNL\Mollie\MiniTix\MiniTixGateway::preparePayment
-     * @todo   Implement testPreparePayment().
+     */
+    public function testPreparePaymentCreateRequest()
+    {
+        // Do request
+        try {
+            $this->object->prepareMiniTixPayment(1234, 'https://some.where/a', 'https://some.where/b', 'abc', MiniTixGateway::COMMUNITY_HYVES);
+        }
+        catch (\Exception $e) {
+            // Exceptions aren't really important.
+            // We're only interested in the request that has
+            // been created.
+        }
+
+        // Test last request
+        $request = $this->object->getBrowser()->getLastRequest();
+        $this->assertEquals(\Buzz\Message\Request::METHOD_GET, $request->getMethod());
+        $this->assertEquals('https://secure.mollie.nl', $request->getHost());
+        $this->assertStringStartsWith('/xml/minitix', $request->getResource());
+        $this->assertContains('action=prepare', $request->getResource());
+        $this->assertContains('type=hyvesafrekenen', $request->getResource());
+        $this->assertContains('partnerid=12345', $request->getResource());
+        $this->assertContains('amount=1234', $request->getResource());
+        $this->assertContains('description=abc', $request->getResource());
+        $this->assertContains('profile_key=abcdef123456789', $request->getResource());
+        $this->assertContains('reporturl=https', $request->getResource());
+        $this->assertContains('returnurl=https', $request->getResource());
+    }
+
+    /**
+     * @covers AMNL\Mollie\MiniTix\MiniTixGateway::preparePayment
      */
     public function testPreparePaymentHandleResponse()
     {
@@ -96,7 +148,7 @@ XML;
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $expected = new \AMNL\Mollie\ProviderResponse('482ba0d32103bfe8eb9bca363d3edd89', 1234, 'https://secure.somewhere/');
@@ -118,28 +170,10 @@ XML;
                 ->expects($this->any())
                 ->method('send')
                 ->will($this->returnValue($response));
+
+        // Mock client
+        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
         return $browser;
-    }
-
-}
-
-/**
- * Implementation of AMNL\Mollie\MiniTix\MiniTixGateway which exposes
- * a method to set the browser implementation.
- *
- * @author Arno Moonen <info@arnom.nl>
- */
-class MiniTixTestGatewayImpl extends MiniTixGateway
-{
-
-    public function __construct()
-    {
-        parent::__construct(123456, 'abcdef123456789');
-    }
-
-    public function setBrowserImplementation(Browser $b)
-    {
-        $this->browser = $b;
     }
 
 }

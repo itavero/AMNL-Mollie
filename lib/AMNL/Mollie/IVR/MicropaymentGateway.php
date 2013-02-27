@@ -48,7 +48,7 @@ class MicropaymentGateway extends Client
      * @param string $base_url Webservice API base. The path will be appended to this.
      * @param ClientInterface $client Client to be used by the Browser instance
      */
-    public function __construct($partner_id, $base_url = 'http://www.mollie.nl/xml/', ClientInterface $client = null)
+    public function __construct($partner_id, $base_url = 'https://www.mollie.nl/xml/', ClientInterface $client = null)
     {
         parent::__construct($base_url, $client);
         $this->setPartnerId($partner_id);

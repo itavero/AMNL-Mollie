@@ -78,7 +78,7 @@ XML;
                 ->expects($this->any())
                 ->method('send')
                 ->will($this->returnValue($response));
-        $this->object->setBrowserImplementation($browser);
+        $this->object->setBrowser($browser);
 
         // Run test
         $this->assertEquals($xmlElement, $this->object->doRequest('/'));
@@ -105,7 +105,7 @@ XML;
                 ->expects($this->any())
                 ->method('send')
                 ->will($this->returnValue($response));
-        $this->object->setBrowserImplementation($browser);
+        $this->object->setBrowser($browser);
 
         // Request
         $this->object->doRequest('/');
@@ -133,11 +133,6 @@ class ClientImpl extends Client
     public function doRequest($path, array $params = null, $method = RequestInterface::METHOD_GET)
     {
         return parent::request($path, $params, $method);
-    }
-
-    public function setBrowserImplementation(Browser $b)
-    {
-        $this->browser = $b;
     }
 
 }

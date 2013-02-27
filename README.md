@@ -11,8 +11,6 @@ If you run in to any issues when using this library or perhaps you have some goo
 
 Several people have been using this library without any problems, so I reckon it is pretty stable.
 I've based all Mollie-specific code on documentation, examples and libraries provided by Mollie, so it should be good to go.
-Things on my TODO list:
-+ PaySafeCard gateway *(I don't have access to an account that has paysafecard enabled, if you do, you're more than welcome to help us out)*
 
 ## Dependencies
 This library uses kriswallsmith/Buzz and needs at least PHP 5.3 to work.

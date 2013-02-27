@@ -30,7 +30,7 @@ abstract class Client
 {
 
     /**
-     * @var Buzz\Browser
+     * @var \Buzz\Browser
      */
     protected $browser;
 
@@ -61,6 +61,30 @@ abstract class Client
     public function setClient(ClientInterface $client)
     {
         $this->browser->setClient($client);
+    }
+
+    /**
+     * @return \Buzz\Client\ClientInterface Client
+     */
+    public function getClient()
+    {
+        return $this->browser->getClient();
+    }
+
+    /**
+     * @return \Buzz\Browser
+     */
+    public function getBrowser()
+    {
+        return $this->browser;
+    }
+
+    /**
+     * @param \Buzz\Browser $browser
+     */
+    public function setBrowser(Browser $browser)
+    {
+        $this->browser = $browser;
     }
 
     /**
@@ -108,6 +132,9 @@ abstract class Client
         return $xml;
     }
 
+    /**
+     * @return string Returns the user agent string (and generates it if it does not yet exist)
+     */
     private function getUserAgentString()
     {
         if (null === static::$userAgentString) {

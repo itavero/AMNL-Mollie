@@ -15,13 +15,10 @@
 
 namespace AMNL\Mollie\IVR;
 
-use Buzz\Message\RequestInterface;
-use Buzz\Browser;
-
 /**
  * @author Arno Moonen <info@arnom.nl>
  */
-class MicropaymentGatewayTest extends \PHPUnit_Framework_TestCase
+class MicropaymentGatewayTest extends \AMNL\Mollie\Test\WebServiceTestCase
 {
 
     /**
@@ -157,31 +154,6 @@ XML;
         // Test
         $expected = new \AMNL\Mollie\IVR\MicropaymentStatus('0909-1100400', '012345', MicropaymentGateway::MODE_PAYPERMINUTE, 175, 'Payment done.', true, false, 131, 0);
         $this->assertEquals($expected, $this->object->checkPayment('0909-1100400', '012345'));
-    }
-
-    protected function createMockBrowserWithResponse($content, array $headers = array('HTTP/1.1 200 OK'))
-    {
-        // Response for mock browser
-        $response = new \Buzz\Message\Response();
-        $response->setContent($content);
-        $response->setHeaders($headers);
-
-        // Mock browser
-        $browser = $this->getMockBuilder('Buzz\Browser')
-                ->setMethods(array('send'))
-                ->getMock();
-        $browser
-                ->expects($this->any())
-                ->method('send')
-                ->will($this->returnValue($response));
-
-        // Mock client
-        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
-
-        // Mock client
-        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
-
-        return $browser;
     }
 
 }

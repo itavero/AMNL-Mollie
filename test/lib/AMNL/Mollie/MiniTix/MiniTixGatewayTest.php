@@ -15,13 +15,10 @@
 
 namespace AMNL\Mollie\MiniTix;
 
-use Buzz\Message\RequestInterface;
-use Buzz\Browser;
-
 /**
  * @author Arno Moonen <info@arnom.nl>
  */
-class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
+class MiniTixGatewayTest extends \AMNL\Mollie\Test\WebServiceTestCase
 {
 
     /**
@@ -153,27 +150,6 @@ XML;
         // Test
         $expected = new \AMNL\Mollie\ProviderResponse('482ba0d32103bfe8eb9bca363d3edd89', 1234, 'https://secure.somewhere/');
         $this->assertEquals($expected, $this->object->preparePayment(1234, 'http://test.somewhere/a', 'http://test.somewhere/b', 'description', array('community' => MiniTixGateway::COMMUNITY_HYVES)));
-    }
-
-    protected function createMockBrowserWithResponse($content, array $headers = array('HTTP/1.1 200 OK'))
-    {
-        // Response for mock browser
-        $response = new \Buzz\Message\Response();
-        $response->setContent($content);
-        $response->setHeaders($headers);
-
-        // Mock browser
-        $browser = $this->getMockBuilder('Buzz\Browser')
-                ->setMethods(array('send'))
-                ->getMock();
-        $browser
-                ->expects($this->any())
-                ->method('send')
-                ->will($this->returnValue($response));
-
-        // Mock client
-        $this->object->setClient(new \AMNL\Mollie\Test\BuzzMockClient());
-        return $browser;
     }
 
 }

@@ -18,7 +18,6 @@ namespace AMNL\Mollie\IDeal;
 use AMNL\Mollie\BaseGateway;
 use AMNL\Mollie\ProviderResponse;
 use AMNL\Mollie\Exception\MollieException;
-use Buzz\Message\RequestInterface;
 use Buzz\Client\ClientInterface;
 
 /**
@@ -39,8 +38,11 @@ class IDealGateway extends BaseGateway
      */
     private $testMode;
 
-    public function __construct($partner_id, $profile_key = null, $testmode = true, $base_url = 'https://secure.mollie.nl/xml/', ClientInterface $client = null)
+    public function __construct($partner_id, $profile_key = null, $testmode = true, $base_url = null, ClientInterface $client = null)
     {
+        if (null === $base_url) {
+            $base_url = 'https://secure.mollie.nl/xml/';
+        }
         parent::__construct($partner_id, $profile_key, $base_url, $client);
         $this->testMode = $testmode;
     }

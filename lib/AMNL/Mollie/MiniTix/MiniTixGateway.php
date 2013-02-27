@@ -32,8 +32,11 @@ class MiniTixGateway extends BaseGateway
     const COMMUNITY_HYVES = 'hyvesafrekenen';
     const COMMUNITY_RABOSMS = 'rabosmsbetalen';
 
-    public function __construct($partner_id, $profile_key, $base_url = 'https://secure.mollie.nl/xml/', ClientInterface $client = null)
+    public function __construct($partner_id, $profile_key, $base_url = null, ClientInterface $client = null)
     {
+        if (null === $base_url) {
+            $base_url = 'https://secure.mollie.nl/xml/';
+        }
         parent::__construct($partner_id, $profile_key, $base_url, $client);
     }
 

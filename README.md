@@ -9,10 +9,9 @@ If you run in to any issues when using this library or perhaps you have some goo
 ## Current State
 *Last update: 2013/02/27*
 
-I'm still working on a stable release of this library. However, several people have been using this library without any problems.
-Besides that, I've based all Mollie-specific code on documentation, examples and libraries provided by Mollie, so it should be good to go.
+Several people have been using this library without any problems, so I reckon it is pretty stable.
+I've based all Mollie-specific code on documentation, examples and libraries provided by Mollie, so it should be good to go.
 Things on my TODO list:
-+ Better unit tests
 + PaySafeCard gateway *(I don't have access to an account that has paysafecard enabled, if you do, you're more than welcome to help us out)*
 
 ## Dependencies

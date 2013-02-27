@@ -3,6 +3,11 @@ php:
  - 5.3
  - 5.4
  - 5.5
+env:
+ - BUZZ_VERSION="0.7"
+ - BUZZ_VERSION="0.8"
+ - BUZZ_VERSION="0.9"
 before_script:
-    - COMPOSER_ROOT_VERSION=dev-master composer --prefer-source --dev install
+ - composer require kriswallsmith/buzz:${BUZZ_VERSION}
+ - COMPOSER_ROOT_VERSION=dev-master composer --prefer-source --dev install
 script: "phpunit -c test/phpunit.dist.xml"

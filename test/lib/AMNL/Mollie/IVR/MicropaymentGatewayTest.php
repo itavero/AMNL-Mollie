@@ -27,7 +27,7 @@ class MicropaymentGatewayTest extends \PHPUnit_Framework_TestCase
     // TODO Add tests to check the request that is formed
 
     /**
-     * @var MicropaymentTestGatewayImpl
+     * @var MicropaymentGateway
      */
     protected $object;
 
@@ -37,7 +37,7 @@ class MicropaymentGatewayTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new MicropaymentTestGatewayImpl();
+        $this->object = new MicropaymentGateway(123456);
     }
 
     /**
@@ -72,7 +72,7 @@ class MicropaymentGatewayTest extends \PHPUnit_Framework_TestCase
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $expected = new \AMNL\Mollie\IVR\MicropaymentResponse('0909-1100400', '012345', MicropaymentGateway::MODE_PAYPERMINUTE, 80, 109, 175, 131);
@@ -103,7 +103,7 @@ XML;
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $expected = new \AMNL\Mollie\IVR\MicropaymentStatus('0909-1100400', '012345', MicropaymentGateway::MODE_PAYPERMINUTE, 175, 'Payment done.', true, false, 131, 0);
@@ -126,27 +126,6 @@ XML;
                 ->method('send')
                 ->will($this->returnValue($response));
         return $browser;
-    }
-
-}
-
-/**
- * Implementation of AMNL\Mollie\IVR\MicropaymentGateway which exposes
- * a method to set the browser implementation.
- *
- * @author Arno Moonen <info@arnom.nl>
- */
-class MicropaymentTestGatewayImpl extends MicropaymentGateway
-{
-
-    public function __construct()
-    {
-        parent::__construct(123456);
-    }
-
-    public function setBrowserImplementation(Browser $b)
-    {
-        $this->browser = $b;
     }
 
 }

@@ -27,7 +27,7 @@ class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
     // TODO Add tests to check the request that is formed
 
     /**
-     * @var MiniTixTestGatewayImpl
+     * @var MiniTixGateway
      */
     protected $object;
 
@@ -37,7 +37,7 @@ class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new MiniTixTestGatewayImpl();
+        $this->object = new MiniTixGateway(123456, 'abcdef123456789');
     }
 
     /**
@@ -69,7 +69,7 @@ class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $expected = new \AMNL\Mollie\TransactionStatus(1234, true, '900150983cd24fb0d6963f7d28e17f72');
@@ -96,7 +96,7 @@ XML;
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $expected = new \AMNL\Mollie\ProviderResponse('482ba0d32103bfe8eb9bca363d3edd89', 1234, 'https://secure.somewhere/');
@@ -119,27 +119,6 @@ XML;
                 ->method('send')
                 ->will($this->returnValue($response));
         return $browser;
-    }
-
-}
-
-/**
- * Implementation of AMNL\Mollie\MiniTix\MiniTixGateway which exposes
- * a method to set the browser implementation.
- *
- * @author Arno Moonen <info@arnom.nl>
- */
-class MiniTixTestGatewayImpl extends MiniTixGateway
-{
-
-    public function __construct()
-    {
-        parent::__construct(123456, 'abcdef123456789');
-    }
-
-    public function setBrowserImplementation(Browser $b)
-    {
-        $this->browser = $b;
     }
 
 }

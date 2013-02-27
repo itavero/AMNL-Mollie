@@ -24,8 +24,10 @@ use Buzz\Browser;
 class IDealGatewayTest extends \PHPUnit_Framework_TestCase
 {
 
+    // TODO Add a test that executes a real HTTP request (https://secure.mollie.nl/xml/ideal?a=banklist&testmode=true)
+
     /**
-     * @var IDealTestGatewayImpl
+     * @var IDealGateway
      */
     protected $object;
 
@@ -35,7 +37,7 @@ class IDealGatewayTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new IDealTestGatewayImpl();
+        $this->object = new IDealGateway(123456, 'abcdef123456789');
     }
 
     /**
@@ -79,7 +81,7 @@ class IDealGatewayTest extends \PHPUnit_Framework_TestCase
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $expected = new \AMNL\Mollie\ProviderResponse('482d599bbcc7795727650330ad65fe9b', 1234, 'https://secure.somewhere/');
@@ -112,7 +114,7 @@ XML;
 </response>
 XML;
         $mockBrowser = $this->createMockBrowserWithResponse($responseContent);
-        $this->object->setBrowserImplementation($mockBrowser);
+        $this->object->setBrowser($mockBrowser);
 
         // Test
         $needle = new Bank(721, 'Postbank');
@@ -138,27 +140,6 @@ XML;
                 ->method('send')
                 ->will($this->returnValue($response));
         return $browser;
-    }
-
-}
-
-/**
- * Implementation of AMNL\Mollie\IDeal\IDealGateway which exposes
- * a method to set the browser implementation.
- *
- * @author Arno Moonen <info@arnom.nl>
- */
-class IDealTestGatewayImpl extends IDealGateway
-{
-
-    public function __construct()
-    {
-        parent::__construct(123456, 'abcdef123456789');
-    }
-
-    public function setBrowserImplementation(Browser $b)
-    {
-        $this->browser = $b;
     }
 
 }

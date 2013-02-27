@@ -9,20 +9,19 @@
  * the LICENSE file that was distributed with this source code.
  *
  * @author Arno Moonen <info@arnom.nl>
- * @copyright Copyright (c) 2012, Arno Moonen <info@arnom.nl>
+ * @copyright Copyright (c) 2013, Arno Moonen <info@arnom.nl>
  * @package AMNL-Mollie
  */
 
 namespace AMNL\Mollie\Exception;
 
 /**
- * This exception class serves as a base class for all other
- * exceptions thrown by this library and will be thrown when there is
- * no specific exception class available for the situation.
+ * This exception should be thrown when an error is returned by the
+ * Mollie API server.
  *
  * @author Arno Moonen <info@arnom.nl>
  */
-class MollieException extends \RuntimeException
+class MollieServerErrorException extends MollieException
 {
 
 }

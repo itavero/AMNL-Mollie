@@ -16,13 +16,14 @@
 namespace AMNL\Mollie;
 
 use AMNL\Mollie\Exception\MollieException;
+use AMNL\Mollie\Exception\MollieServerErrorException;
 use Buzz\Browser;
 use Buzz\Client\ClientInterface;
 use Buzz\Message\RequestInterface;
 use Buzz\Util\Url;
 
 /**
- * 
+ * Client
  *
  * @author Arno Moonen <info@arnom.nl>
  */
@@ -93,6 +94,8 @@ abstract class Client
      * @param array $params
      * @param mixed $method
      * @return \SimpleXMLElement
+     * @throws \AMNL\Mollie\Exception\MollieException
+     * @throws \AMNL\Mollie\Exception\MollieServerErrorException
      */
     protected function request($path, array $params = null, $method = RequestInterface::METHOD_GET)
     {
@@ -115,21 +118,32 @@ abstract class Client
         }
 
         // Convert XML
-        $xml = null;
+        $responseXml = null;
         try {
-            $xml = new \SimpleXMLElement($response->getContent());
+            $responseXml = new \SimpleXMLElement($response->getContent());
         }
         catch (\Exception $e) {
-            // Failed
-            throw new MollieException('Server did not respond with valid XML.', 0, $e);
+            throw new MollieException('Failed to convert response content to XML object.', 0, $e);
         }
 
-        // Error?
-        if ($xml->item != null && ((string) $xml->item['type']) == 'error') {
-            throw new MollieException((string) $xml->item->message, intval($xml->item->errorcode));
-        }
+        // Contains error?
+        $this->checkResponseForError($responseXml);
 
-        return $xml;
+        return $responseXml;
+    }
+
+    /**
+     * Check if the given response contains an error, if so, it will
+     * throw an exception.
+     *
+     * @param \SimpleXMLElement $response
+     * @throws \AMNL\Mollie\Exception\MollieServerErrorException
+     */
+    protected function checkResponseForError(\SimpleXMLElement $response)
+    {
+        if ($response->item != null && ((string) $response->item['type']) == 'error') {
+            throw new MollieServerErrorException((string) $response->item->message, intval($response->item->errorcode));
+        }
     }
 
     /**

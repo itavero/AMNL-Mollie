@@ -131,7 +131,6 @@ XML;
 
     /**
      * @covers AMNL\Mollie\IVR\MicropaymentGateway::checkPayment
-     * @todo   Implement testCheckPayment().
      */
     public function testCheckPaymentHandleResponse()
     {

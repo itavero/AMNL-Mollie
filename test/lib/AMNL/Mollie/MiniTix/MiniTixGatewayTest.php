@@ -75,7 +75,6 @@ class MiniTixGatewayTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers AMNL\Mollie\MiniTix\MiniTixGateway::checkPayment
-     * @todo   Implement testCheckPayment().
      */
     public function testCheckPaymentHandleResponse()
     {
@@ -132,7 +131,6 @@ XML;
 
     /**
      * @covers AMNL\Mollie\MiniTix\MiniTixGateway::preparePayment
-     * @todo   Implement testPreparePayment().
      */
     public function testPreparePaymentHandleResponse()
     {

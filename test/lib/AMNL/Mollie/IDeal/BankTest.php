@@ -41,7 +41,6 @@ class BankTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers AMNL\Mollie\IDeal\Bank::getId
-     * @todo   Implement testGetId().
      */
     public function testGetId()
     {
@@ -52,7 +51,6 @@ class BankTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers AMNL\Mollie\IDeal\Bank::getId
-     * @todo   Implement testGetId().
      */
     public function testGetIdFail()
     {
@@ -63,7 +61,6 @@ class BankTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers AMNL\Mollie\IDeal\Bank::getName
-     * @todo   Implement testGetName().
      */
     public function testGetName()
     {

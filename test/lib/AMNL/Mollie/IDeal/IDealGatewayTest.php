@@ -171,7 +171,7 @@ XML;
      */
     public function testGetBankListRealRequest()
     {
-        $this->object->setClient(new \Buzz\Client\FileGetContents());
+        $this->object->setClient(new \Buzz\Client\Curl());
         $banks = $this->object->getBankList(false);
         $this->assertContainsOnlyInstancesOf('\AMNL\Mollie\IDeal\Bank', $banks);
         $this->assertCount(1, $banks);

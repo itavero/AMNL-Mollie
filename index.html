@@ -41,24 +41,71 @@
       <section>
         <p>The goal of this PHP 5.3+ library is to simplify the implementation of the payment methods offered by <a href="http://www.mollie.nl">Mollie B.V.</a></p>
 
-<h2>Documentation</h2>
+<h1>Installation</h1>
 
-<p>The goal of this site is to provide some basic documentation and examples, similar to the examples offered by Mollie.
-Unfortunately these are not present yet, but I'm working hard on adding these.</p>
+<p>You can easily install this library using Composer by adding it to your composer.json or by running this command from your command-line:</p>
 
-<h2>Problems and suggestions</h2>
+<div class="highlight"><pre>php composer.phar require ruudk/mollie-bundle
+</pre></div>
 
-<p>If you run in to any issues when using this library or perhaps you have some good suggestions, please care to share them. Just <a href="https://github.com/itavero/AMNL-Mollie/issues">create a new issue over here</a>.</p>
+<p>If you will be using Symfony 2, you can choose to install the bundle created by <a href="https://github.com/ruudk" class="user-mention">@ruudk</a>, which can be found <a href="https://github.com/ruudk/MollieBundle">here</a>.
+And finally, if you aren't using composer or Symfony 2, you can just download the code as an archive.</p>
 
-<h2>Dependencies</h2>
+<h1>Usage</h1>
 
-<p>This library uses kriswallsmith/Buzz and needs at least PHP 5.3 to work.
-The easiest way to add this library to your project, is by adding <code>amnl/mollie</code> to your dependencies in <a href="http://getcomposer.org/">composer.json</a>.</p>
+<p>Every client implements the <code>AMNL\Mollie\ProviderGateway</code> interface. This is done to make it easier to implement the other payment methods when you've already implemented one. This also means that every client has a <strong>checkPayment</strong> and a <strong>preparePayment</strong> method.</p>
 
-<h2>License</h2>
+<h2>iDEAL</h2>
 
-<p>This library may be used free of charge, however a link to this repository or my website is appreciated.
-For more information, view the LICENSE file in the <code>master</code> branch.</p>
+<p>To handle iDEAL payments we'll need an instance of <code>AMNL\Mollie\IDeal\IDealGateway</code>. The constructor has the following parameters:</p>
+
+<ul>
+<li>
+<code>$partner_id</code> - Your Mollie Partner ID (account number)</li>
+<li>
+<code>$profile_key</code> - Profile key <em>[optional]</em>
+</li>
+<li>
+<code>$testmode</code> - Set to false to disable the test mode <em>[optional - true by default]</em>
+</li>
+<li>
+<code>$base_url</code> - Sets the base URL used for API calls <em>[optional - defaults to null, which means the default url will be used]</em>
+</li>
+<li>
+<code>$client</code> - Instance of the Buzz client that should be used to issue requests. Should be an instance of <em>\Buzz\Client\ClientInterface</em>.</li>
+</ul><p>So, let's say your Partner ID is <code>123456</code>, then you would need to following code to get started (assuming you have an autoloader mechanism in place).</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="nv">$gateway</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\AMNL\Mollie\IDeal\IDealGateway</span><span class="p">(</span><span class="mi">123456</span><span class="p">);</span>
+</pre></div>
+
+<h3>0. Get list of banks</h3>
+
+<p>Before you can prepare a payment, we first need to know which bank the customer is going to use. You can get a list of banks by calling the <code>getBankList</code> method on the gateway instance, which gives you an array of <code>\AMNL\Mollie\IDeal\Bank</code>. You'll need a Bank-object or a bank ID when preparing a payment.</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="nv">$banks</span> <span class="o">=</span> <span class="nv">$gateway</span><span class="o">-&gt;</span><span class="na">getBankList</span><span class="p">();</span>
+</pre></div>
+
+<h3>1. Prepare payment</h3>
+
+<p>To prepare a payment and get the URL you should redirect your customer to, you can call either the <code>preparePayment</code> or the <code>prepareIDealPayment</code> method on the gateway instance. The latter will call the former internally.</p>
+
+<p>The method signature of <em>preparePayment</em> is pretty much compatible across all the different payment gateways included in this library. <em>preparePayment</em> accepts the following parameters:</p>
+
+<ul>
+<li>
+<code>$amount</code> - Amount that must be paid, in <strong>Euro cents</strong>
+</li>
+<li>
+<code>$report_url</code> - URL that will be called to inform your application of a status update</li>
+<li>
+<code>$return_url</code> - URL the customer will be send to after the payment process is done (even if it was unsuccessful!)</li>
+<li>
+<code>$description</code> - Description which will be visible to the customer</li>
+<li>
+<code>$options</code> - Array of additional options needed for a specific gateway. In case of the <em>IDealGateway</em> this should contain a key <em>bank</em> which has a Bank instance or a bank ID (int / string) as its value.</li>
+</ul><p>** WORK IN PROGRESS --- TO BE CONTINUED **</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/itavero">itavero</a></p>
@@ -66,6 +113,16 @@ For more information, view the LICENSE file in the <code>master</code> branch.</
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-13135527-17");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>

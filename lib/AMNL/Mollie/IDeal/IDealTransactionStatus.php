@@ -26,7 +26,7 @@ class IDealTransactionStatus extends TransactionStatus
 {
 
     /**
-     * @var AMNL\Mollie\IDeal\Bank 
+     * @var \AMNL\Mollie\IDeal\Consumer
      */
     protected $consumer;
 

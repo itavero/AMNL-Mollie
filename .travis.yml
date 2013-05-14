@@ -9,5 +9,5 @@ env:
  - BUZZ_VERSION="0.9"
 before_script:
  - composer require kriswallsmith/buzz:${BUZZ_VERSION}
- - COMPOSER_ROOT_VERSION=dev-master composer --prefer-source --dev install
+ - COMPOSER_ROOT_VERSION=dev-master composer --prefer-source --dev --no-interaction install
 script: "phpunit -c test/phpunit.dist.xml"

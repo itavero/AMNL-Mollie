@@ -41,21 +41,24 @@
       <section>
         <p>The goal of this PHP 5.3+ library is to simplify the implementation of the payment methods offered by <a href="http://www.mollie.nl">Mollie B.V.</a></p>
 
-<h1>Installation</h1>
+<h1>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
 
 <p>You can easily install this library using Composer by adding it to your composer.json or by running this command from your command-line:</p>
 
-<div class="highlight"><pre>php composer.phar require ruudk/mollie-bundle
+<div class="highlight"><pre>php composer.phar require amnl/mollie
 </pre></div>
 
 <p>If you will be using Symfony 2, you can choose to install the bundle created by <a href="https://github.com/ruudk" class="user-mention">@ruudk</a>, which can be found <a href="https://github.com/ruudk/MollieBundle">here</a>.
 And finally, if you aren't using composer or Symfony 2, you can just download the code as an archive.</p>
 
-<h1>Usage</h1>
+<h1>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
 <p>Every client implements the <code>AMNL\Mollie\ProviderGateway</code> interface. This is done to make it easier to implement the other payment methods when you've already implemented one. This also means that every client has a <strong>checkPayment</strong> and a <strong>preparePayment</strong> method.</p>
 
-<h2>iDEAL</h2>
+<h2>
+<a name="ideal" class="anchor" href="#ideal"><span class="octicon octicon-link"></span></a>iDEAL</h2>
 
 <p>To handle iDEAL payments we'll need an instance of <code>AMNL\Mollie\IDeal\IDealGateway</code>. The constructor has the following parameters:</p>
 
@@ -79,7 +82,8 @@ And finally, if you aren't using composer or Symfony 2, you can just download th
 <span class="nv">$gateway</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\AMNL\Mollie\IDeal\IDealGateway</span><span class="p">(</span><span class="mi">123456</span><span class="p">);</span>
 </pre></div>
 
-<h3>0. Get list of banks</h3>
+<h3>
+<a name="0-get-list-of-banks" class="anchor" href="#0-get-list-of-banks"><span class="octicon octicon-link"></span></a>0. Get list of banks</h3>
 
 <p>Before you can prepare a payment, we first need to know which bank the customer is going to use. You can get a list of banks by calling the <code>getBankList</code> method on the gateway instance, which gives you an array of <code>\AMNL\Mollie\IDeal\Bank</code>. You'll need a Bank-object or a bank ID when preparing a payment.</p>
 
@@ -87,7 +91,8 @@ And finally, if you aren't using composer or Symfony 2, you can just download th
 <span class="nv">$banks</span> <span class="o">=</span> <span class="nv">$gateway</span><span class="o">-&gt;</span><span class="na">getBankList</span><span class="p">();</span>
 </pre></div>
 
-<h3>1. Prepare payment</h3>
+<h3>
+<a name="1-prepare-payment" class="anchor" href="#1-prepare-payment"><span class="octicon octicon-link"></span></a>1. Prepare payment</h3>
 
 <p>To prepare a payment and get the URL you should redirect your customer to, you can call either the <code>preparePayment</code> or the <code>prepareIDealPayment</code> method on the gateway instance. The latter will call the former internally.</p>
 
@@ -105,7 +110,48 @@ And finally, if you aren't using composer or Symfony 2, you can just download th
 <code>$description</code> - Description which will be visible to the customer</li>
 <li>
 <code>$options</code> - Array of additional options needed for a specific gateway. In case of the <em>IDealGateway</em> this should contain a key <em>bank</em> which has a Bank instance or a bank ID (int / string) as its value.</li>
-</ul><p>** WORK IN PROGRESS --- TO BE CONTINUED **</p>
+</ul><h3>
+<a name="2-redirect-the-user" class="anchor" href="#2-redirect-the-user"><span class="octicon octicon-link"></span></a>2. Redirect the user</h3>
+
+<p>When the payment is prepared the <code>preparePayment</code> method returns an instance of <code>AMNL\Mollie\ProviderResponse</code>. This object has three properties:</p>
+
+<ul>
+<li>
+<code>transactionId</code> - The name says it all: identifier for the transaction that has just been created.</li>
+<li>
+<code>amount</code> - Amount in eurocents</li>
+<li>
+<code>destination</code> - URL to which the user should be forwarded</li>
+</ul><p>Most likely you would want to store the <code>transactionId</code> (for example in an Order object), before forwarding the user to the URL provided in <code>destination</code>.</p>
+
+<h3>
+<a name="3-thank-you" class="anchor" href="#3-thank-you"><span class="octicon octicon-link"></span></a>3. Thank You!</h3>
+
+<p>It's very likely that the user will return on the <em>return_url</em> set in <em>1. Prepare Payment</em> before the transaction has been cleared. You might want to say thank you on the page served at the return_url and let the user know his/her transaction is being processed.</p>
+
+<h3>
+<a name="4-get-transaction-status" class="anchor" href="#4-get-transaction-status"><span class="octicon octicon-link"></span></a>4. Get transaction status</h3>
+
+<p>When the <em>report_url</em> is called, it's time to get the status of the transaction. Mollie sends the transaction ID along in the GET-parameter called <em>transaction_id</em> (pretty straight-forward right?).
+All you have to do is call the <code>checkPayment</code> method on an <em>IDealGateway</em> instance and supply the transaction identifier as the first and only argument.</p>
+
+<p>The method will return a <code>IDealTransactionStatus</code> (which inherits from the "global" <code>AMNL\Mollie\TransactionStatus</code>).</p>
+
+<p>The property you'll be most interested in is <code>paid</code> (isPaid).</p>
+
+<p><strong>Important note:</strong> If a transaction had the status "paid" (<code>paid == true</code>) and you request the status a second time, <code>paid</code> will still be true. This behaviour is different from the default implementation that Mollie uses. However, you can check the <code>status</code> property (which contains the message received from the API) to see if you have checked the transaction status before.</p>
+
+<h2>
+<a name="other-payment-services" class="anchor" href="#other-payment-services"><span class="octicon octicon-link"></span></a>Other payment services</h2>
+
+<p><strong>AMNL\Mollie</strong> also offers support for Paysafecard, Minitix and IVR (micropayments). However we will not discuss those here, since the API of these gateways and the workflow are pretty much similar to the iDeal example given above.</p>
+
+<h1>
+<a name="questions-bugs-or-other-issues" class="anchor" href="#questions-bugs-or-other-issues"><span class="octicon octicon-link"></span></a>Questions, bugs or other issues</h1>
+
+<p>If you have any questions, please contact the original author: <a href="http://arnom.nl">Arno Moonen</a> <a href="http://github.com/itavero">@itavero</a> on GitHub).</p>
+
+<p>If you come across a bug or notice some unexpected behavior, please <a href="https://github.com/itavero/AMNL-Mollie/issues">add a new issue on GitHub</a>.</p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/itavero">itavero</a></p>

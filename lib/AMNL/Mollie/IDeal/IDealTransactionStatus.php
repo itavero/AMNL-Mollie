@@ -41,9 +41,10 @@ class IDealTransactionStatus extends TransactionStatus
     public function __construct($amount, $paid, $transaction_id, $consumer, $status)
     {
         // Fix the corky response of Mollie
-        if ($paid === false && $status == 'CheckedBefore') {
+        // TODO Verify behavior of iDEAL API
+        /*if ($paid === false && $status == 'CheckedBefore') {
             $paid = true;
-        }
+        }*/
 
         parent::__construct($amount, $paid, $transaction_id, $status);
 

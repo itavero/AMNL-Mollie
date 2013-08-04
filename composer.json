@@ -22,5 +22,10 @@
     },
     "autoload": {
         "psr-0": { "AMNL\\Mollie": "lib/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "v1.0-dev"
+        }
     }
 }

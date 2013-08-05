@@ -139,7 +139,8 @@ All you have to do is call the <code>checkPayment</code> method on an <em>IDealG
 
 <p>The property you'll be most interested in is <code>paid</code> (isPaid).</p>
 
-<p><strong>Important note:</strong> If a transaction had the status "paid" (<code>paid == true</code>) and you request the status a second time, <code>paid</code> will still be true. This behaviour is different from the default implementation that Mollie uses. However, you can check the <code>status</code> property (which contains the message received from the API) to see if you have checked the transaction status before.</p>
+<p><strong>Important note (pre v1.0.1):</strong> If a transaction had the status "paid" (<code>paid == true</code>) and you request the status a second time, <code>paid</code> will still be true. This behaviour is different from the default implementation that Mollie uses. However, you can check the <code>status</code> property (which contains the message received from the API) to see if you have checked the transaction status before.
+<strong>This behavior is no longer present in release v1.0.1 and later. For more information, see <a href="//github.com/itavero/AMNL-Mollie/issues/17">issue #17</a>.</strong></p>
 
 <h2>
 <a name="other-payment-services" class="anchor" href="#other-payment-services"><span class="octicon octicon-link"></span></a>Other payment services</h2>
@@ -155,7 +156,7 @@ All you have to do is call the <code>checkPayment</code> method on an <em>IDealG
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/itavero">itavero</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->

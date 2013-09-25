@@ -200,7 +200,7 @@ class IDealGateway extends BaseGateway
         $banks = array();
 
         foreach ($xml->bank as $bank) {
-            $banks[$bank->bank_id] = new Bank($bank->bank_id, $bank->bank_name);
+            $banks[(string) $bank->bank_id] = new Bank($bank->bank_id, $bank->bank_name);
         }
 
         // Cache?

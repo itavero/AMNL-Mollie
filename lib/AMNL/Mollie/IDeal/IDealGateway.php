@@ -179,7 +179,7 @@ class IDealGateway extends BaseGateway
      * Returns an array of Bank-instances the customer can choose from.
      *
      * @param boolean $use_cache Use internal array cache?
-     * @return array An array containing Bank-instances
+     * @return \AMNL\Mollie\IDeal\Bank[]
      */
     public function getBankList($use_cache = true)
     {
@@ -200,7 +200,7 @@ class IDealGateway extends BaseGateway
         $banks = array();
 
         foreach ($xml->bank as $bank) {
-            $banks[] = new Bank($bank->bank_id, $bank->bank_name);
+            $banks[$bank->bank_id] = new Bank($bank->bank_id, $bank->bank_name);
         }
 
         // Cache?
